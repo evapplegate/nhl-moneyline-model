@@ -227,6 +227,32 @@ docker run -p 8000:8000 nhl-model
 
 ---
 
+## Running Tests
+
+Automated test suite validates data quality, model integrity, and API functionality:
+
+```bash
+# Install test dependencies (included in requirements.txt)
+pip install pytest httpx
+
+# Run full test suite
+pytest tests/ -v
+
+# Run specific test module
+pytest tests/test_data_pipeline.py -v
+pytest tests/test_model_integrity.py -v
+pytest tests/test_api.py -v
+```
+
+**Test Coverage (22 tests):**
+- **Data Pipeline** (9 tests): Schema validation, null checks, feature integrity, home win baseline
+- **Model Integrity** (8 tests): Model loading, predictions in [0,1], feature count, reproducibility
+- **API Endpoints** (5 tests): Health check, teams endpoint, validation, documentation
+
+All tests pass: `22 passed in 1.47s`
+
+---
+
 ## Project Structure
 
 ```
