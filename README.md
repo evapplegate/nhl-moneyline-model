@@ -199,6 +199,34 @@ curl -X POST http://127.0.0.1:8000/predict \
 
 ---
 
+## Docker Deployment
+
+### Run via Docker (Single Command)
+
+No local Python setup required—Docker handles everything:
+
+```bash
+# Option 1: Using our convenience script
+./docker-build-and-run.sh
+# Opens http://localhost:8000/docs
+
+# Option 2: Using docker-compose
+docker-compose up --build
+# Opens http://localhost:8000/docs
+
+# Option 3: Manual build & run
+docker build -t nhl-model .
+docker run -p 8000:8000 nhl-model
+```
+
+**Why Docker?**
+- Identical environment: laptop → cloud → interviewer's machine
+- No dependency conflicts
+- Easy deployment to AWS/GCP/Azure
+- Clean isolation
+
+---
+
 ## Project Structure
 
 ```
