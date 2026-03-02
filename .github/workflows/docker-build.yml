@@ -1,0 +1,44 @@
+name: Build & Push Docker Image (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Docker image tag'
+        required: false
+        default: 'latest'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: false
+        tags: nhl-model:${{ github.event.inputs.tag }}
+        outputs: type=docker,dest=/tmp/nhl-model.tar
+
+    - name: Load Docker image
+      run: |
+        docker load --input /tmp/nhl-model.tar
+        docker image ls
+
+    - name: Test Docker image
+      run: |
+        # Start container and verify health endpoint
+        docker run -d -p 8000:8000 --name nhl-test nhl-model:${{ github.event.inputs.tag }}
+        sleep 5
+        curl -f http://localhost:8000/health || exit 1
+        docker stop nhl-test
+
+    - name: Image built successfully
+      run: echo "Docker image 'nhl-model:${{ github.event.inputs.tag }}' built and tested successfully"
+

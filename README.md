@@ -3,6 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-3.11-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Status](https://img.shields.io/badge/Status-Production--Ready-brightgreen.svg)
+[![Tests](https://github.com/YOUR_USERNAME/nhl-moneyline-model/actions/workflows/tests.yml/badge.svg)](https://github.com/YOUR_USERNAME/nhl-moneyline-model/actions)
 
 A machine learning pipeline that predicts **NHL home-team win probabilities** using Elo ratings, rolling team form, and rest advantage. Trained on 6,557 games (Oct 2021 – Mar 2026) and deployed via FastAPI for real-time predictions.
 
@@ -250,6 +251,23 @@ pytest tests/test_api.py -v
 - **API Endpoints** (5 tests): Health check, teams endpoint, validation, documentation
 
 All tests pass: `22 passed in 1.47s`
+
+---
+
+## Continuous Integration & Deployment
+
+GitHub Actions automatically tests on every push:
+
+- **Tests Workflow** (`.github/workflows/tests.yml`):
+  - Runs on: Python 3.11, Linux
+  - Triggers: Every push to `main` or `develop`
+  - Jobs: Install dependencies → Lint (flake8) → Run pytest (22 tests) → Upload coverage
+  - Status: Check [Actions tab](https://github.com/YOUR_USERNAME/nhl-moneyline-model/actions) for latest runs
+
+- **Docker Build** (`.github/workflows/docker-build.yml`):
+  - Manual trigger via "Actions" tab
+  - Builds Docker image and verifies health endpoint
+  - Output: Docker image ready for deployment
 
 ---
 
