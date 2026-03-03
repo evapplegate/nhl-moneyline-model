@@ -18,7 +18,7 @@ This is a **production-ready ML pipeline** that predicts NHL game outcomes with 
 
 ```bash
 # Clone repo
-git clone https://github.com/YOUR_USERNAME/nhl-moneyline-model.git
+git clone https://github.com/evapplegate/nhl-moneyline-model.git
 cd nhl-moneyline-model
 
 # Build and run (single command)
@@ -36,7 +36,7 @@ Open browser to: **http://localhost:8000/docs**
 
 ```bash
 # Clone repo
-git clone https://github.com/YOUR_USERNAME/nhl-moneyline-model.git
+git clone https://github.com/evapplegate/nhl-moneyline-model.git
 cd nhl-moneyline-model
 
 # Create virtual environment
