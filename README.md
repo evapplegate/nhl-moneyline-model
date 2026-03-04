@@ -245,12 +245,12 @@ pytest tests/test_model_integrity.py -v
 pytest tests/test_api.py -v
 ```
 
-**Test Coverage (22 tests):**
+**Test Coverage (23 tests):**
 - **Data Pipeline** (9 tests): Schema validation, null checks, feature integrity, home win baseline
 - **Model Integrity** (8 tests): Model loading, predictions in [0,1], feature count, reproducibility
-- **API Endpoints** (5 tests): Health check, teams endpoint, validation, documentation
+- **API Endpoints** (6 tests): Health check, teams endpoint (37+ teams), valid prediction schema, error handling, documentation
 
-All tests pass: `22 passed in 1.47s`
+All tests pass locally: `23 passed`
 
 ---
 
@@ -261,13 +261,24 @@ GitHub Actions automatically tests on every push:
 - **Tests Workflow** (`.github/workflows/tests.yml`):
   - Runs on: Python 3.11, Linux
   - Triggers: Every push to `main` or `develop`
-  - Jobs: Install dependencies → Lint (flake8) → Run pytest (22 tests) → Upload coverage
+  - Jobs: Install dependencies → Lint (flake8) → Run pytest (23 tests) → Upload coverage (`coverage.xml`)
   - Status: Check [Actions tab](https://github.com/evapplegate/nhl-moneyline-model/actions) for latest runs
 
 - **Docker Build** (`.github/workflows/docker-build.yml`):
   - Manual trigger via "Actions" tab
   - Builds Docker image and verifies health endpoint
   - Output: Docker image ready for deployment
+
+- **Monthly Retrain** (`.github/workflows/retrain.yml`):
+  - Triggers: Monthly schedule + manual dispatch
+  - Jobs: Run pipeline, regenerate metrics/artifacts, auto-commit if outputs change
+  - Purpose: Keep model artifacts fresh with minimal maintenance overhead
+
+---
+
+## Interview Demo
+
+For a concise interview walkthrough, command snippets, and expected API responses, see [DEMO.md](DEMO.md).
 
 ---
 

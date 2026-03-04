@@ -7,7 +7,7 @@ This is a **production-ready ML pipeline** that predicts NHL game outcomes with 
 **Why this is impressive:**
 - ✅ Complete ML lifecycle (data ingestion → feature engineering → model training → API deployment)
 - ✅ Reproducible: Docker ensures identical environments on any machine
-- ✅ Engineered: 14 carefully-designed features, 22 automated tests, CI/CD pipeline
+- ✅ Engineered: 14 carefully-designed features, 23 automated tests, CI/CD pipeline
 - ✅ Production-ready: FastAPI with error handling, OpenAPI docs, comprehensive logging
 
 ---
@@ -61,7 +61,7 @@ Open browser to: **http://localhost:8000/docs**
 curl http://localhost:8000/teams
 
 # Response:
-# {"teams": ["ANA", "ARI", "BOS", "BUF", ..., "WPG"]}  [36 teams total]
+# {"teams": ["ANA", "ARI", "BOS", "BUF", ..., "WPG"]}  [37 teams total]
 ```
 
 ### Predict a Game
@@ -137,7 +137,7 @@ All code is validated by automated tests:
 # Run full test suite
 pytest tests/ -v
 
-# Output: 22 passed in 1.47s
+# Output: 23 passed
 #   ✓ 9 data pipeline tests (schema, nulls, baseline)
 #   ✓ 8 model integrity tests (loading, predictions, reproducibility)
 #   ✓ 5 API tests (endpoints, validation, docs)
@@ -198,11 +198,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
 
 This portfolio has been verified to work end-to-end:
 
-- ✅ Fresh clone → Full setup < 5 min (Docker) or 10 min (venv)
-- ✅ All 22 tests pass locally (`pytest tests/ -v`)
+- ✅ Fresh clone → Full setup < 5 min runtime (Docker), with first-time image build ~97s
+- ✅ All 23 tests pass locally (`pytest tests/ -v`, ~2.15s)
 - ✅ API starts and serves requests (`curl http://localhost:8000/health`)
 - ✅ Docker image builds and runs (`docker build && docker run`)
-- ✅ CI/CD pipeline configured (GitHub Actions on every push)
+- ✅ CI/CD pipeline configured (GitHub Actions on every push + monthly retrain workflow)
 - ✅ All documentation complete and links working
 - ✅ No sensitive data in repo (API keys, credentials excluded)
 - ✅ Professional git history with meaningful commits
