@@ -6,6 +6,7 @@ Loads team state and model, then fetches and scores scheduled games.
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta
+import argparse
 from pathlib import Path
 import math
 
@@ -63,13 +64,14 @@ def load_artifacts():
     return model, state.set_index("team")
 
 
-def fetch_upcoming_games(start_date: date) -> list[dict]:
-    """Fetch unplayed games from NHL API starting from start_date."""
+def fetch_upcoming_games(start_date: date, days: int = 1) -> list[dict]:
+    """Fetch unplayed games from NHL API starting from start_date for N days."""
     games = []
-    
-    # Fetch next 30 days of schedule
+    end_date = start_date + timedelta(days=days - 1)
+
+    # Fetch schedule window
     current = start_date
-    for _ in range(30):
+    for _ in range(days):
         try:
             url = f"{BASE_URL}/{current.isoformat()}"
             response = requests.get(url, timeout=10)
@@ -78,6 +80,13 @@ def fetch_upcoming_games(start_date: date) -> list[dict]:
             
             # Collect unplayed games (gameState != "OFF")
             for week in data.get("gameWeek", []):
+                week_date = week.get("date")
+                if not week_date:
+                    continue
+                schedule_day = date.fromisoformat(week_date)
+                if schedule_day < start_date or schedule_day > end_date:
+                    continue
+
                 for game in week.get("games", []):
                     state = game.get("gameState", "").upper()
                     # Skip finished games
@@ -88,7 +97,7 @@ def fetch_upcoming_games(start_date: date) -> list[dict]:
                     if not start_time:
                         continue
                     
-                    game_date = start_time.split("T")[0]
+                    game_date = week_date
                     home = game["homeTeam"]["abbrev"]
                     away = game["awayTeam"]["abbrev"]
                     
@@ -115,6 +124,25 @@ def fetch_upcoming_games(start_date: date) -> list[dict]:
             unique.append(g)
     
     return unique
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Predict NHL games from the schedule without manually entering teams."
+    )
+    parser.add_argument(
+        "--date",
+        type=date.fromisoformat,
+        default=date.today(),
+        help="Start date in YYYY-MM-DD (default: today).",
+    )
+    parser.add_argument(
+        "--days",
+        type=int,
+        default=1,
+        help="Number of days to predict starting at --date (default: 1).",
+    )
+    return parser.parse_args()
 
 
 def predict_game(model, team_state: pd.DataFrame, game: dict) -> dict:
@@ -197,12 +225,17 @@ def predict_game(model, team_state: pd.DataFrame, game: dict) -> dict:
 
 
 def main() -> None:
+    args = parse_args()
+    if args.days < 1:
+        raise ValueError("--days must be >= 1")
+
     print("🔮 Loading model and team state...")
     model, team_state = load_artifacts()
-    
-    today = date.today()
-    print(f"📅 Fetching upcoming games from {today}...")
-    games = fetch_upcoming_games(today)
+
+    start_date = args.date
+    end_date = start_date + timedelta(days=args.days - 1)
+    print(f"📅 Fetching upcoming games from {start_date} to {end_date}...")
+    games = fetch_upcoming_games(start_date, days=args.days)
     
     if not games:
         print("ℹ️ No upcoming games found.")
@@ -245,7 +278,12 @@ def main() -> None:
     print(f"Total predictions: {len(df_pred)}")
     
     # Save to CSV
-    output_path = ROOT / "data/upcoming_predictions.csv"
+    output_name = (
+        f"predictions_{start_date.isoformat()}.csv"
+        if args.days == 1
+        else "upcoming_predictions.csv"
+    )
+    output_path = ROOT / "data" / output_name
     df_pred.to_csv(output_path, index=False)
     print(f"💾 Saved predictions to {output_path}")
 

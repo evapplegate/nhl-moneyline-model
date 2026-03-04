@@ -146,8 +146,15 @@ python src/eval_models.py
 ### 4. Predict Upcoming Games
 ```bash
 python src/predict_upcoming_games.py
-# Outputs: data/upcoming_predictions.csv
-# → 281 upcoming games with P(home win)
+# Default: predicts today's scheduled games (no team input required)
+# Output: data/predictions_YYYY-MM-DD.csv
+
+# Optional: predict a specific date
+python src/predict_upcoming_games.py --date 2026-03-10
+
+# Optional: predict a window of days (legacy upcoming behavior)
+python src/predict_upcoming_games.py --date 2026-03-10 --days 30
+# Output for multi-day runs: data/upcoming_predictions.csv
 ```
 
 ### 5. Start API Server
@@ -269,8 +276,8 @@ GitHub Actions automatically tests on every push:
   - Builds Docker image and verifies health endpoint
   - Output: Docker image ready for deployment
 
-- **Monthly Retrain** (`.github/workflows/retrain.yml`):
-  - Triggers: Monthly schedule + manual dispatch
+- **Weekly Retrain** (`.github/workflows/retrain.yml`):
+  - Triggers: Weekly schedule (Mondays) + manual dispatch
   - Jobs: Run pipeline, regenerate metrics/artifacts, auto-commit if outputs change
   - Purpose: Keep model artifacts fresh with minimal maintenance overhead
 
@@ -304,7 +311,7 @@ For a concise interview walkthrough, command snippets, and expected API response
 │   ├── phase5_build_team_state.py ← Phase 5: Latest team snapshots
 │   ├── run_pipeline.py            ← One-command runner (phases 1-5)
 │   ├── eval_models.py             ← Generate plots & metrics
-│   └── predict_upcoming_games.py  ← Score next 30 days
+│   └── predict_upcoming_games.py  ← Score today's games (or any date/range)
 │
 ├── notebooks/
 │   └── model-development.ipynb    ← Interactive EDA + insights
@@ -316,7 +323,7 @@ For a concise interview walkthrough, command snippets, and expected API response
 │   │   ├── games_clean.csv        ← Validated games
 │   │   ├── games_with_features.csv ← Full feature matrix
 │   │   ├── team_state_latest.csv  ← Current Elo + form per team
-│   │   └── upcoming_predictions.csv ← Predictions for next 30d
+│   │   └── upcoming_predictions.csv ← Predictions for selected multi-day runs
 │   └── raw/
 │
 ├── models/

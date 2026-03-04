@@ -202,7 +202,7 @@ This portfolio has been verified to work end-to-end:
 - ✅ All 23 tests pass locally (`pytest tests/ -v`, ~2.15s)
 - ✅ API starts and serves requests (`curl http://localhost:8000/health`)
 - ✅ Docker image builds and runs (`docker build && docker run`)
-- ✅ CI/CD pipeline configured (GitHub Actions on every push + monthly retrain workflow)
+- ✅ CI/CD pipeline configured (GitHub Actions on every push + weekly retrain workflow)
 - ✅ All documentation complete and links working
 - ✅ No sensitive data in repo (API keys, credentials excluded)
 - ✅ Professional git history with meaningful commits
