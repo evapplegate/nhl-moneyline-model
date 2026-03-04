@@ -27,6 +27,7 @@ Thumbs.db
 
 # Raw data (excluded, processed/models included)
 data/raw/*.csv
+data/predictions_*.csv
 
 # Environment
 .env
