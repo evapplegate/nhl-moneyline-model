@@ -1,0 +1,57 @@
+name: Monthly Retrain
+
+on:
+  schedule:
+    - cron: '0 7 1 * *'
+  workflow_dispatch:
+
+jobs:
+  retrain:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run full data + training pipeline
+        run: |
+          python src/run_pipeline.py
+          python src/eval_models.py
+
+      - name: Detect retraining changes
+        id: changes
+        run: |
+          if git diff --quiet -- data/processed models reports/metrics_comparison.csv; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit updated artifacts
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/processed models reports/metrics_comparison.csv
+          git commit -m "chore: monthly retrain artifacts"
+          git push
+
+      - name: Report outcome
+        run: |
+          if [ "${{ steps.changes.outputs.has_changes }}" = "true" ]; then
+            echo "Retraining produced updated artifacts and pushed a commit."
+          else
+            echo "Retraining completed with no artifact changes."
+          fi
