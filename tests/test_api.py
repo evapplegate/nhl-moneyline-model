@@ -37,8 +37,8 @@ def test_teams_endpoint(client):
     
     teams = data.get("teams", data) if isinstance(data, dict) else data
     
-    # Should have teams
-    assert len(teams) >= 30, f"Expected 30+ teams, got {len(teams)}"
+    # Should have at least 37 teams
+    assert len(teams) >= 37, f"Expected 37+ teams, got {len(teams)}"
     
     # All teams should be 3-letter codes
     assert all(isinstance(t, str) and len(t) == 3 for t in teams)
@@ -54,6 +54,40 @@ def test_predict_endpoint_exists(client):
     # Should get 422 for validation error, not 404 for missing endpoint
     assert response.status_code in [422, 400], \
         f"Expected 422 (validation), got {response.status_code}"
+
+
+def test_predict_valid_input_response_schema(client):
+    """Verify /predict with valid payload returns expected response schema."""
+    teams_response = client.get("/teams")
+    assert teams_response.status_code == 200
+    teams_payload = teams_response.json()
+    teams = teams_payload.get("teams", teams_payload) if isinstance(teams_payload, dict) else teams_payload
+
+    assert len(teams) >= 2
+    home_team, away_team = teams[0], teams[1]
+
+    payload = {
+        "game_date": "2026-03-10",
+        "home_team": home_team,
+        "away_team": away_team,
+        "model": "logreg",
+    }
+
+    response = client.post("/predict", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+
+    required_keys = {
+        "home_team",
+        "away_team",
+        "game_date",
+        "p_home_win",
+        "p_away_win",
+        "features_used",
+    }
+    assert required_keys.issubset(data.keys())
+    assert 0.0 <= data["p_home_win"] <= 1.0
+    assert 0.0 <= data["p_away_win"] <= 1.0
 
 
 def test_predict_invalid_team(client):

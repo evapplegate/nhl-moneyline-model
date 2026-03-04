@@ -187,20 +187,33 @@ def predict(req: PredictRequest):
 
     def getf(row, col, default):
         v = row.get(col)
-        if v is None or (isinstance(v, float) and math.isnan(v)):
+        if v is None or pd.isna(v):
             return default
         return float(v)
 
+    home_home_rolling_win_pct = getf(home_row, "home_rolling_win_pct", 0.5)
+    away_away_rolling_win_pct = getf(away_row, "away_rolling_win_pct", 0.5)
+    home_home_rolling_goal_diff = getf(home_row, "home_rolling_goal_diff", 0.0)
+    away_away_rolling_goal_diff = getf(away_row, "away_rolling_goal_diff", 0.0)
+
     x = {
         "elo_diff": elo_diff,
-        "home_rolling_win_pct": getf(home_row, "home_rolling_win_pct", 0.5),
-        "away_rolling_win_pct": getf(away_row, "away_rolling_win_pct", 0.5),
-        "home_rolling_goal_diff": getf(home_row, "home_rolling_goal_diff", 0.0),
-        "away_rolling_goal_diff": getf(away_row, "away_rolling_goal_diff", 0.0),
+        "home_rolling_win_pct": home_home_rolling_win_pct,
+        "away_rolling_win_pct": away_away_rolling_win_pct,
+        "home_rolling_goal_diff": home_home_rolling_goal_diff,
+        "away_rolling_goal_diff": away_away_rolling_goal_diff,
         "rest_diff": rest_diff,
+        "home_home_rolling_win_pct": home_home_rolling_win_pct,
+        "home_home_rolling_goal_diff": home_home_rolling_goal_diff,
+        "away_away_rolling_win_pct": away_away_rolling_win_pct,
+        "away_away_rolling_goal_diff": away_away_rolling_goal_diff,
+        "form_diff": home_home_rolling_win_pct - away_away_rolling_win_pct,
+        "gd_diff": home_home_rolling_goal_diff - away_away_rolling_goal_diff,
+        "split_form_diff": home_home_rolling_win_pct - away_away_rolling_win_pct,
+        "split_gd_diff": home_home_rolling_goal_diff - away_away_rolling_goal_diff,
     }
 
-    X = pd.DataFrame([x], columns=FEATURES)
+    X = pd.DataFrame([{feature: x.get(feature, 0.0) for feature in FEATURES}], columns=FEATURES)
     p_home = float(model.predict_proba(X)[:, 1][0])
     # Optional betting math (only if sportsbook odds are provided)
     p_away = float(1.0 - p_home)

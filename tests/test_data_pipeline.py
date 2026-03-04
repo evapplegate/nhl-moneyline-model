@@ -107,8 +107,8 @@ def test_team_state_latest_schema(data_dir):
     assert any(col in df.columns for col in ["home_rolling_win_pct", "away_rolling_win_pct"]), \
         "Missing rolling win pct columns"
     
-    # Should have ~37 teams (including 2025-26 expansion)
-    assert len(df) >= 30, f"Expected 30+ teams, got {len(df)}"
+    # Should have at least 37 teams (including 2025-26 expansion)
+    assert len(df) >= 37, f"Expected 37+ teams, got {len(df)}"
 
 
 
