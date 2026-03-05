@@ -155,7 +155,17 @@ python src/predict_upcoming_games.py --date 2026-03-10
 # Optional: predict a window of days (legacy upcoming behavior)
 python src/predict_upcoming_games.py --date 2026-03-10 --days 30
 # Output for multi-day runs: data/upcoming_predictions.csv
+
+# Optional: pull sportsbook odds + edge + unit sizing (requires ODDS_API_KEY)
+export ODDS_API_KEY="your_api_key_here"
+python src/predict_upcoming_games.py --bookmaker draftkings --bankroll 1000 --unit-size-pct 0.01 --kelly-cap 0.25 --min-edge 0.02
 ```
+
+When `ODDS_API_KEY` is set, prediction outputs include sportsbook pricing and recommendations:
+- `home_odds_american`, `away_odds_american`
+- `implied_home_prob`, `implied_away_prob`, `vig`
+- `edge_home`, `edge_away`
+- `recommended_stake`, `recommended_units`, `bet_side`, `recommend_bet`
 
 ### 5. Start API Server
 ```bash
@@ -342,19 +352,19 @@ For a concise interview walkthrough, command snippets, and expected API response
 ## Resume Bullets (Customize per Role)
 
 ### For **Data Scientists**: Emphasis on Modeling & Evaluation
-- Engineered 14 probabilistic features (Elo rating system, 10-game rolling windows, rest-based advantage model) achieving **0.5819 AUC** and **0.6799 log loss** on 2k-game holdout.
-- Trained and evaluated Logistic Regression vs XGBoost; LogReg selected for production due to superior calibration, enabling accurate edge detection in 281 upcoming games.
-- Built end-to-end evaluation pipeline (ROC curves, calibration plots, confusion matrices) in matplotlib/seaborn; verified ~95% model agreement (low variance across algorithms).
+- Engineered a 14-feature NHL outcome model (Elo, rolling form, goal-diff, rest) on 6,557 games, delivering **0.5819 AUC**, **0.6799 log loss**, and calibrated win probabilities.
+- Trained and compared Logistic Regression vs XGBoost, selected the production model based on calibration and stability, and operationalized daily schedule-based inference.
+- Integrated market comparison logic (no-vig implied probability, edge, EV, Kelly-capped stake sizing) to convert raw probabilities into actionable betting recommendations.
 
 ### For **ML Engineers**: Emphasis on Production & Systems
-- Designed automated daily data pipeline (API ingestion → cleaning → feature engineering → model retraining) with path-agnostic scripts deployable from any working directory.
-- Built production-grade FastAPI server with real-time team state updates, Elo refresh post-game, and REST endpoints for batch/single-game predictions; includes 3 models (LogReg, XGBoost, meta-ensemble).
-- Implemented reproducible model artifact packaging (joblib bundles) with feature version control and monitoring dashboards; enables A/B testing of retrained models.
+- Built an end-to-end ML system (ingestion → features → training → serving) with reproducible artifacts, FastAPI deployment, and Dockerized runtime for consistent local/cloud execution.
+- Added GitHub Actions quality gates (pytest + coverage + lint) and weekly scheduled retraining automation that refreshes processed artifacts and pushes updates when data changes.
+- Shipped batch and real-time inference paths: `/predict` API endpoint plus automated day-of-game prediction script with optional sportsbook odds ingestion.
 
 ### For **Software Engineers**: Emphasis on Engineering & Reliability
-- Developed robust data validation pipeline handling 6k+ game records with schema enforcement, duplicate detection, and type coercion; zero data loss on erroneous API responses.
-- Built FastAPI application with OpenAPI documentation, pydantic validation, dependency injection, and comprehensive error handling; 100% uptime in dev.
-- Deployed Jupyter notebook walkthrough documenting feature engineering rationale and model selection trade-offs, enabling non-technical stakeholders to understand predictions.
+- Built and maintained a modular Python codebase with clear phase scripts, strong input validation, and deterministic model packaging for repeatable results.
+- Implemented an automated test suite (23 tests) covering data integrity, model loading/scoring behavior, and API contract validation with robust error handling paths.
+- Delivered developer-ready documentation (README, DEMO, model card), Docker run scripts, and CI workflows to support onboarding and interview-ready demos.
 
 ---
 
