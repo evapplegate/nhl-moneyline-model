@@ -349,25 +349,6 @@ For a concise interview walkthrough, command snippets, and expected API response
 
 ---
 
-## Resume Bullets (Customize per Role)
-
-### For **Data Scientists**: Emphasis on Modeling & Evaluation
-- Engineered a 14-feature NHL outcome model (Elo, rolling form, goal-diff, rest) on 6,557 games, delivering **0.5819 AUC**, **0.6799 log loss**, and calibrated win probabilities.
-- Trained and compared Logistic Regression vs XGBoost, selected the production model based on calibration and stability, and operationalized daily schedule-based inference.
-- Integrated market comparison logic (no-vig implied probability, edge, EV, Kelly-capped stake sizing) to convert raw probabilities into actionable betting recommendations.
-
-### For **ML Engineers**: Emphasis on Production & Systems
-- Built an end-to-end ML system (ingestion → features → training → serving) with reproducible artifacts, FastAPI deployment, and Dockerized runtime for consistent local/cloud execution.
-- Added GitHub Actions quality gates (pytest + coverage + lint) and weekly scheduled retraining automation that refreshes processed artifacts and pushes updates when data changes.
-- Shipped batch and real-time inference paths: `/predict` API endpoint plus automated day-of-game prediction script with optional sportsbook odds ingestion.
-
-### For **Software Engineers**: Emphasis on Engineering & Reliability
-- Built and maintained a modular Python codebase with clear phase scripts, strong input validation, and deterministic model packaging for repeatable results.
-- Implemented an automated test suite (23 tests) covering data integrity, model loading/scoring behavior, and API contract validation with robust error handling paths.
-- Delivered developer-ready documentation (README, DEMO, model card), Docker run scripts, and CI workflows to support onboarding and interview-ready demos.
-
----
-
 ## Limitations & Future Work
 
 ### Current Limitations
